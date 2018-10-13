@@ -1,143 +1,446 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>three.js base</title>
-        <style>
-        </style>
-    </head>
-    <body>
-        <script type="text/javascript" src="./three.js"></script>
-        <script type="text/javascript" src="./OrbitControls.js"></script>
-        <script type="text/javascript" src="https://cdn.rawgit.com/josephg/noisejs/master/perlin.js"></script>
-        
+<meta charset="utf-8">
+<head>
+<!-- Bootstrap used for the positioning divs -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="javascripts/libs/bootstrap3/css/bootstrap.min.css">
+<link rel="stylesheet" href="javascripts/libs/css/font-awesome.min.css">
+<!-- Latest compiled and minified JavaScript -->
+<script src="javascripts/libs/jquery/jquery-3.2.1.min.js"></script>
+<script src="javascripts/libs/bootstrap3/js/bootstrap.min.js"></script>
+<script src="javascripts/libs/d3/d3.min.js"></script>
+<style>
 
-        <script>
+/*Background color*/
+body{
+  background-color: #BEE9E8;
+  font-family: "Verdana", "Arial", "sans-serif";
+}
 
-            var scene = new THREE.Scene();
-            var camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 10, 1000 );
-            camera.position.z = 30;
+/*To center (horizontally and vertically) the contents of the div*/
+div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-            var renderer = new THREE.WebGLRenderer( { antialias: true } );
-            renderer.setPixelRatio( window.devicePixelRatio );
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            renderer.setClearColor( 0x2B3A42, 1 );
-
-            document.body.appendChild( renderer.domElement );
-
-            var orbit = new THREE.OrbitControls( camera, renderer.domElement );
-            orbit.enableZoom = false;
-
-
-            var ambientLight  = new THREE.AmbientLight( '#FFE7FF' ),
-                hemiLight     = new THREE.HemisphereLight('#FFE7FF', '#FFE7FF', 0.5 ),
-                light         = new THREE.PointLight( '#FFE7FF', 1, 100 );
-
-            hemiLight.position.set( 0, 0, 2 );
-            light.position.set( 0, 0, 20 );
-
-            scene.add( hemiLight );
-            scene.add( light );
-
-            var group = new THREE.Group();
-
-            var geometry = new THREE.SphereGeometry( 15, 200, 50 );
-            var material = new THREE.MeshLambertMaterial( { color: 0xCCB4E0, opacity:0.5, transparent:true, wireframe:true, emissive: 0xFFB4E0,emissiveIntensity:0.1} );
-
-            var sphere_one = new THREE.Mesh( geometry, material );
-            sphere_one.position.x = 0;
-            sphere_one.position.y = 0;
-            sphere_one.position.z = 0;
-            group.add( sphere_one );
-
-            var geometry = new THREE.SphereGeometry( 12, 150, 40 );
-            var material = new THREE.MeshLambertMaterial( { color: 0xFFB4E0, opacity:0.6, transparent:false, wireframe:true,  } );
-            var sphere_two = new THREE.Mesh( geometry, material );
-            sphere_two.position.x = 0;
-            sphere_two.position.y = 0;
-            sphere_two.position.z = 0;
-            group.add( sphere_two );
-
-            var geometry = new THREE.SphereGeometry( 40, 100, 100 );
-            var material = new THREE.MeshLambertMaterial( {  color: 0xEB6896, opacity:0.2, transparent:true, wireframe:true, emissive: 0xEB6896,emissiveIntensity:0.8 } );
-            var sphere_three = new THREE.Mesh( geometry, material );
-            sphere_three.position.x = 0;
-            sphere_three.position.y = 0;
-            sphere_three.position.z = 0;
-            group.add( sphere_three );
+</style>
+</head>
 
 
+<body>
+<div class="row">
+  <div class="col-xs-1 col-sm-1 col-md-1"></div>
+  <div class="col-xs-10 col-sm-10 col-md-10" id='d3text'>
+    <h4 id='title'></h4>
+  </div>
+  <div class="col-xs-1 col-sm-1 col-md-1"></div>
+</div>
 
-            scene.add( group );
-
-            var clock = new THREE.Clock();
-            var direction = 1;
-            
-
-            var prevFog = false;
-
-            var render = function () {
-                noise.seed(Math.random());
-                requestAnimationFrame( render );
-
-                sphere_one.geometry.vertices.forEach(function(i){
-                    var noisy = noise.simplex3(i.x,i.y,i.z)*0.05;
-                    i.x+=noisy*direction;
-                    i.y+=noisy*direction;
-                    i.z+=noisy*direction;
-                });
-
-                sphere_two.geometry.vertices.forEach(function(i){
-                    var noisy = noise.simplex3(i.x,i.y,i.z)*0.05;
-                    i.x+=noisy*direction;
-                    i.y+=noisy*direction;
-                    i.z+=noisy*direction;
-                });
-
-                sphere_three.geometry.vertices.forEach(function(i){
-                    var noisy = noise.simplex3(i.x,i.y,i.z)*0.5;
-                    i.x+=noisy*direction;
-                    i.y+=noisy*direction;
-                    i.z+=noisy*direction;
-                });
-                // sphere_two.geometry.vertices.forEach(function(i){
-                //     i.x+=(2*Math.random()-1)*0.5*direction;
-                //     i.y+=(2*Math.random()-1)*0.5*direction;
-                //     i.z+=(2*Math.random()-1)*0.5*direction;
-                // });
-
-                // sphere_three.geometry.vertices.forEach(function(i){
-                //     i.x+=(2*Math.random()-1)*0.8*direction;
-                //     i.y+=(2*Math.random()-1)*0.8*direction;
-                //     i.z+=(2*Math.random()-1)*0.8*direction;
-                // });
-
-                // console.log(clock.getElapsedTime());
-
-                if (Math.floor(clock.getElapsedTime())%100==0){
-                    direction*=-1;
-                };
-                // console.log(Math.floor(clock.getElapsedTime()));
-                orbit.update();
-                group.rotation.x += 0.002;
-                group.rotation.y += 0.002;
-                group.rotation.z += 0.002;
-               
-                sphere_one.geometry.verticesNeedUpdate = true;
-                renderer.render( scene, camera );
-
-            };
-
-            window.addEventListener( 'resize', function () {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize( window.innerWidth, window.innerHeight );
-
-            }, false );
+<div class='row'>
+<div  id='d3legend'>
 
 
-            render();
+</div>
+</div>
+<br>
+<div class='row'>
+<div  id='d3status'>
 
-        </script>
-    </body>
-</html>
+
+</div>
+</div>
+<div class='row'>
+<div  id='d3icons'>
+
+
+</div>
+</div>
+
+<div class="row">
+  <!-- For the D3 chart -->
+  <div class="col-xs-12 col-sm-12 col-md-12">
+    <div class="col-12 col-xs-12 col-sm-12 col-md-12" id='d3canvas'></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-4 col-sm-4 col-md-4"></div>
+  <div class="col-xs-4 col-sm-4 col-md-4" class='btn-group'>
+    <button class='btn' id='reset'><span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span></button>
+  </div>
+  <div class="col-xs-4 col-sm-4 col-md-4"></div>
+</div>
+
+
+<script>
+// Color palette
+
+var raspberry = '#8A1C59';
+var magenta = '#FC60A8';
+var bluejeans = '#5ECAE9';
+var spacecadet = '#173753';
+var powderblue = '#BEE9E8';
+
+var flowercol1 = '#F815CD';
+var flowercol2 = '#EB0A9F';
+var flowercol3 = '#BA00C9';
+
+var margin = 0;
+var width = 800 - 2*margin, height = 800 - 2*margin;
+var selectedarea;
+
+var baseRadius = 40;
+var alphaCoeff = 0.1
+
+var textSizeOne = '22px';
+var textSizeTwo = '12px';
+
+
+// By using margin and appending a g that is moved right and down by margin
+// Our chart will be within g
+var svg = d3.select('#d3canvas')
+            .append('svg')
+            .attr('width', width + 2*margin)
+            .attr('height', height + 2*margin)
+var g = svg.append('g')
+            .attr('transform', 'translate(' + margin + ',' + margin + ')');
+
+//add zoom capabilities 
+var zoom_handler = d3.zoom()
+    .on("zoom", zoom_actions);
+ 
+zoom_handler(svg);     
+ 
+function zoom_actions(){
+    g.attr("transform", d3.event.transform)
+}
+
+// Background color for the svg using a rect
+g.append('rect')
+    .attr('width', width + 2*margin)
+    .attr('height', height + 2*margin)
+    .attr('fill', powderblue);
+
+// Title text
+var textBox = d3.select('#d3text')
+                .append('p');
+textBox
+  .append('h1')
+  .attr('class', 'descriptor')
+  .attr('x', 0)
+  .attr('y', 0)
+  .text('network garden')
+  .style('color', magenta)
+  .style('opacity', 1.0)
+  .style("font-family", "sans-serif")
+  .style('font-weight', 'bold')
+  .style("font-size", "14px")
+  .style('text-anchor', 'middle');
+
+d3.select("#reset")
+    .on("click", resetted);
+
+function resetted() {
+  svg.transition()
+      .duration(750)
+      .call(zoom_handler.transform, d3.zoomIdentity);
+}
+
+
+d3.csv('/data/network.csv', function(error, links){
+  if (error) throw error;
+
+
+  // To set colors and size based on tags
+  links.forEach(function(link){
+    if(link.TagTwo=='High'){
+      link.col = flowercol1;
+    } else if (link.TagTwo=='Medium'){
+      link.col = flowercol2;
+    } else if (link.TagTwo=='Low'){
+      link.col = flowercol3;
+    }
+  })
+  links.forEach(function(link){
+    if(link.TagThree=='Completed'){
+      link.sizeMul = 0.5;
+    } else if (link.TagThree=='In Progress'){
+      link.sizeMul = 2.5;
+    }
+  })
+  var nodes = {};
+
+  links.forEach(function(link){
+    // link source or target will equal NodeOne or NodeTwo if it exists
+    // OR it will create and assign a new node
+    // We also add attributes to NodeTwo
+    link.source = nodes[link.NodeOne] || 
+                  (nodes[link.NodeOne] = {name: link.NodeOne});
+
+    
+    link.target = nodes[link.NodeTwo] || 
+                  (nodes[link.NodeTwo] = {name: link.NodeTwo, tagone:link.TagOne, 
+                                          tagtwo: link.TagTwo,
+                                          tagthree:link.TagThree,
+                                          col:link.col,
+                                          sizeMul:link.sizeMul});
+  });
+
+  // console.log(links);
+
+  var nodes = d3.values(nodes); // Returns an array of nodes - i.e. change nodes from an object to an array
+
+  drawChart(nodes, links);
+
+  });
+
+
+function drawChart(nodes, links, area) {
+
+// D3 simulation
+// Radius is from the impactNum - but with a buffer to push them apart
+
+	var repelForce = d3.forceManyBody().strength(-200).distanceMax(500).distanceMin(100);
+
+	var simulation = d3.forceSimulation()
+                      .force('link', d3.forceLink().links(links))
+                      .force('charge', d3.forceManyBody())
+					  .force('repel', repelForce)
+                      .force('center', d3.forceCenter(width/2, height/2))
+                      .force('collision', d3.forceCollide().radius(baseRadius))
+                      
+                      // .force('x', d3.forceX(100))
+                      // .force('y', d3.forceY(0))
+                      // .iterations(25);
+
+  simulation.alphaTarget(alphaCoeff); // dampening for the force chart to settle down
+
+// Nodes, node and link
+// Node text is being done separately here for ease of manipulation
+// It's traditionally done by group them together under a g tag
+
+
+  var nodetext = g.append('g')
+                .attr('class', 'nodestext')
+                .selectAll('circle')
+                .data(nodes)
+                .enter()
+                .append('text')
+				        .attr('class', 'nodestext-text')
+                .text(function(d){return d.name;})
+                .style("font-size", textSizeOne)
+                .attr('font-weight', 'bold')
+                .attr('fill', spacecadet)
+                .attr('fill-opacity', 0.5)
+                .style('pointer-events', 'none')
+                .style('text-anchor', 'middle')
+                .on('click', connectedNodes)
+                // .on('mouseout', connectedNodes);
+
+  var node = g.append('g')
+                .attr('class', 'nodes')
+                .selectAll('circle')
+                .data(nodes)
+                .enter()
+                .append('circle')     
+                .attr('r', baseRadius)
+                .attr('fill', bluejeans)
+                .attr('fill-opacity', 0.01)
+                .attr('stroke', function(d){
+                  return d.col;
+                })
+                .attr('stroke-width', function(d){
+                  return 20*d.sizeMul;
+                })
+                .attr('stroke-opacity', 0.5)
+                .style('stroke-dasharray', '1,3')
+                .style('cursor', 'pointer')
+                .on('click', connectedNodes)          
+                .on("touchstart", connectedNodes)
+                .call(d3.drag()
+                        .on('start', dragstarted)
+                        .on('drag', dragged)
+                        .on('end', dragended))
+                // .on('mouseout', connectedNodes);
+
+  var link = g.append('g')
+              .attr('class', 'links')
+              .selectAll('line')
+              .data(links)
+              .enter()
+              .append('line')
+              .attr('stroke', raspberry)
+              .attr('stroke-opacity', 0.5)
+              .attr('stroke-width', '2px')
+              .style('stroke-dasharray', '10');
+
+
+// No positions are generated yet
+// Uncomment the lines below to check
+
+  // node.each(function(d){
+  //   var node = d3.select(this);
+  //   console.log(node.attr('cx'));
+  //   console.log(node.attr('cy'));
+  // })
+
+
+
+// This is where the network magic happens
+// The lines below update the simulation  and position of the elements when they are called later as part of the network simulation
+
+  var ticked = function() {
+
+      var multiplier = 2.0;
+// The x and y coordinates are generated when we insert the arrays nodes and links into the simulation function below
+    
+      // The max and min functions are used below to constraint the nodes within the svg - think of it as adding an invisible wall to the borders
+      node
+          .attr('cx', function(d){return d.x = Math.max(baseRadius*multiplier, Math.min(width-baseRadius*multiplier, d.x));})
+          .attr('cy', function(d){return d.y = Math.max(baseRadius*multiplier, Math.min(height-baseRadius*multiplier, d.y));});
+
+
+      nodetext
+          .attr('x', function(d){return d.x = Math.max(baseRadius*multiplier, Math.min(width-baseRadius*multiplier, d.x));})
+          .attr('y', function(d){return d.y = Math.max(baseRadius*multiplier, Math.min(height-baseRadius*multiplier, d.y));});
+
+      link
+          .attr('x1', function(d){return d.source.x;})
+          .attr('y1', function(d) {return d.source.y;})
+          .attr('x2', function(d){return d.target.x;})
+          .attr('y2', function(d) {return d.target.y;});
+
+      // Uncomment the lines below to see the x and y positions   
+
+      // node.each(function(d){
+      //   var node = d3.select(this);
+      //   console.log(node.attr('cx'));
+      //   console.log(node.attr('cy'));
+      // })
+
+      // link.each(function(d){
+      //   var link = d3.select(this);
+      //   console.log(link.attr('x1'));
+      //   console.log(link.attr('y1'));
+      //   console.log(link.attr('x2'));
+      //   console.log(link.attr('y2'));
+      // })
+
+  }
+// Update
+//var numTicks = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay()))
+
+  simulation
+            .nodes(nodes)
+            .on('tick', ticked);
+
+  simulation.force('link')
+            .links(links);
+
+
+
+// Function for dragging the nodes
+  function dragstarted(d){
+    if (!d3.event.active) simulation.alphaTarget(alphaCoeff).restart();
+    d.fx = d.x;
+    d.dy = d.y;
+  }
+
+  function dragged(d){
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+
+  function dragended(d){
+    if (!d3.event.active) simulation.alphaTarget(alphaCoeff);
+    d.fx = null;
+    d.fy = null;
+  }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 
+
+  var toggle = 0;
+
+  function connectedNodes(){
+    // The tracker array is used for saving the positions of all the nodes that are connected in the current selection
+	tracker = [];
+	//  Toggle is needed here as we are using the same function for mouseover and mouseout
+	
+    if (toggle==0){
+      d = d3.select(this).node().__data__;
+
+      node
+          .transition()
+          .duration(200)
+          .ease(d3.easeCubic)
+          .style('fill-opacity', function(o){
+                return d.index==o.index ? 0.2 : 0.05;
+          })
+          .style('stroke-opacity', function(o){
+                return d.index==o.index ? 0.2 : 0.05;
+          });
+
+      nodetext
+          .transition()
+          .duration(200)
+          .ease(d3.easeCubic)
+          .style('font-style', function(o){
+                return d.index==o.index ? 'bold' : 'normal';
+          })
+          .style('fill', function(o){
+                      return d.index==o.index ? spacecadet : 'grey';
+          });
+
+        link
+          .transition()
+          .duration(200)
+          .ease(d3.easeCubic)
+          .style('opacity', function(o){
+            // If the index of d is equal to either the index of the source or target of the link
+                return d.index==o.source.index | d.index==o.target.index ? 0.8 : 0.5;
+          })
+          .style('stroke', function(o){
+                return d.index==o.source.index | d.index==o.target.index ? spacecadet : bluejeans;
+          })
+          .style('stroke-width', function(o){
+                return d.index==o.source.index | d.index==o.target.index ? '2px' : '0.5px';
+          });
+
+      toggle = 1;
+    } else {
+
+      // Note: Need to use styles instead of attr here for the change to take effect, probably because we used this to access the style
+      nodetext.transition().duration(300)
+                .style("font-size", textSizeOne)
+                .style('font-weight', 'bold')
+                .style('fill', spacecadet)
+                .style('fill-opacity', 0.5)
+                .style('pointer-events', 'none')
+                .style('text-anchor', 'middle');	
+				
+      node.transition().duration(300)
+                .style('r', baseRadius)
+                .style('fill', bluejeans)
+                .style('fill-opacity', 0.01)
+                .style('stroke', magenta)
+                .style('stroke-width', '20')
+                .style('stroke-opacity', 0.5)
+                .style('stroke-dasharray', '1,3');
+
+      link.transition().duration(300)
+                  .style('stroke', raspberry)
+                  .style('stroke-opacity', 0.5)
+                  .style('stroke-width', '2px')
+                  .style('stroke-dasharray', '10');
+
+	     simulation.alphaTarget(0.05);
+      toggle = 0;
+    }
+}
+
+}
+</script>
+</body>

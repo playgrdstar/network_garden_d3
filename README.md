@@ -1,3 +1,3 @@
-# Primer on vertices in three.js 
+# Network Garden     
 
-A simple primer on manipulating vertices in three.js
+Creating a pretty little network chart in d3.js
